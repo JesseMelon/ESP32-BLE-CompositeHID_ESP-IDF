@@ -160,7 +160,7 @@ static String dPadDirectionName(uint8_t direction){
     return "NONE";
 }
 
-
+//TODO: totally decimate this class, get rid of mutex and extra input, and unnecessary junk
 class XboxGamepadDevice : public BaseCompositeDevice {
 public:
     XboxGamepadDevice();
@@ -191,13 +191,14 @@ public:
     void releaseShare();
     
     void sendGamepadReport(bool defer = false);
-    void sendManagedGamepadReport(XboxGamepadInputReportData inputReport);
+    void sendManagedGamepadReport();
     
-    private:
-    void sendGamepadReportImpl();
-    
-    
+    // HACK: this is now public. Only use sendManagedGamepadReport, and manage threadsafety
     XboxGamepadInputReportData _inputReport;
+
+    private:
+    void sendGamepadReportImpl();    
+    
     NimBLECharacteristic* _extra_input;
     XboxGamepadCallbacks* _callbacks;
     XboxGamepadDeviceConfiguration* _config;
