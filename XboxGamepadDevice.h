@@ -191,12 +191,13 @@ public:
     void releaseShare();
     
     void sendGamepadReport(bool defer = false);
-
-private:
+    void sendManagedGamepadReport(XboxGamepadInputReportData inputReport);
+    
+    private:
     void sendGamepadReportImpl();
-
+    
+    
     XboxGamepadInputReportData _inputReport;
-
     NimBLECharacteristic* _extra_input;
     XboxGamepadCallbacks* _callbacks;
     XboxGamepadDeviceConfiguration* _config;

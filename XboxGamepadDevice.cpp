@@ -336,6 +336,24 @@ void XboxGamepadDevice::sendGamepadReport(bool defer) {
     }
 }
 
+void XboxGamepadDevice::sendManagedGamepadReport(XboxGamepadInputReportData inputReport){
+    auto input = getInput();
+    auto parentDevice = this->getParent();
+
+    if (!input || !parentDevice)
+        return;
+
+    if(!parentDevice->isConnected())
+        return;
+
+    {
+        size_t packedSize = sizeof(inputReport);
+        ESP_LOGD(LOG_TAG, "Sending gamepad report, size: %d", packedSize);
+        input->setValue((uint8_t*)&inputReport, packedSize);
+    }
+    input->notify();
+}
+
 void XboxGamepadDevice::sendGamepadReportImpl(){
     auto input = getInput();
     auto parentDevice = this->getParent();
