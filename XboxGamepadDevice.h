@@ -191,14 +191,13 @@ public:
     void releaseShare();
     
     void sendGamepadReport(bool defer = false);
-    void sendManagedGamepadReport();
+    void sendManagedGamepadReport(XboxGamepadInputReportData inputReport);
     
-    // HACK: this is now public. Only use sendManagedGamepadReport, and manage threadsafety
-    XboxGamepadInputReportData _inputReport;
-
+    
     private:
     void sendGamepadReportImpl();    
     
+    XboxGamepadInputReportData _inputReport;
     NimBLECharacteristic* _extra_input;
     XboxGamepadCallbacks* _callbacks;
     XboxGamepadDeviceConfiguration* _config;

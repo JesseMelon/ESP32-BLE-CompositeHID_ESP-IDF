@@ -1,6 +1,7 @@
 # Register the ESP32-BLE-CompositeHID component
 idf_component_register(
   SRCS
+    "XboxDescriptors.cpp"
     "BleCompositeHID.cpp"
     "BaseCompositeDevice.cpp"
     "BleConnectionStatus.cpp"

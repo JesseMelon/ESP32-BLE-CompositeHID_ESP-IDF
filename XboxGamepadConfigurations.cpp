@@ -77,11 +77,11 @@ BLEHostConfiguration XboxSeriesXControllerDeviceConfiguration::getIdealHostConfi
 
     // Vendor: Microsoft
     config.setVidSource(VENDOR_USB_SOURCE);
-    config.setVid(XBOX_VENDOR_ID); 
+    config.setVid(XBOX_VENDOR_ID);
     
     // Product: Xbox Series X Wireless Controller - Model 1944 pre 2021 firmware
     // Only compatible on linux kernels >= 6.5
-    config.setPid(XBOX_1914_PRODUCT_ID); 
+    config.setPid(XBOX_1914_PRODUCT_ID);
     config.setGuidVersion(XBOX_1914_BCD_DEVICE_ID);
     config.setSerialNumber(XBOX_1914_SERIAL);
 

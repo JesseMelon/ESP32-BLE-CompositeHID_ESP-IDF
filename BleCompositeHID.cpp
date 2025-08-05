@@ -44,6 +44,11 @@ std::string firmwareRevision;
 std::string hardwareRevision;
 std::string systemID;
 
+//Singleton entities
+NimBLEServer *pServer;
+NimBLEAdvertising *pAdvertising;
+BleCompositeHID *BleCompositeHIDInstance;
+
 std::string uint8_to_hex_string(const uint8_t *v, const size_t s) {
   std::stringstream ss;
 
@@ -175,14 +180,14 @@ void BleCompositeHID::sendDeferredReports()
 
 void BleCompositeHID::taskServer(void *pvParameter)
 {
-    BleCompositeHID *BleCompositeHIDInstance = (BleCompositeHID *)pvParameter; // static_cast<BleCompositeHID *>(pvParameter);
+    BleCompositeHIDInstance = (BleCompositeHID *)pvParameter; // static_cast<BleCompositeHID *>(pvParameter);
 
     // Use the procedure below to set a custom Bluetooth MAC address
     // Compiler adds 0x02 to the last value of board's base MAC address to get the BT MAC address, so take 0x02 away from the value you actually want when setting
     //uint8_t newMACAddress[] = {0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF - 0x02};
     //esp_base_mac_addr_set(&newMACAddress[0]); // Set new MAC address 
     NimBLEDevice::init(BleCompositeHIDInstance->deviceName);
-    NimBLEServer *pServer = NimBLEDevice::createServer();
+    pServer = NimBLEDevice::createServer();
     pServer->setCallbacks(BleCompositeHIDInstance->_connectionStatus);
 
     BleCompositeHIDInstance->_hid = new NimBLEHIDDevice(pServer);
@@ -278,11 +283,10 @@ void BleCompositeHID::taskServer(void *pvParameter)
     BleCompositeHIDInstance->onStarted(pServer);
 
     // Start BLE advertisement
-    NimBLEAdvertising *pAdvertising = pServer->getAdvertising();
+    pAdvertising = pServer->getAdvertising();
     pAdvertising->setAppearance(hidType);
     pAdvertising->addServiceUUID(BleCompositeHIDInstance->_hid->getHidService()->getUUID());
-    pAdvertising->start();
-    ESP_LOGD(LOG_TAG, "Advertising started!");
+    BleCompositeHIDInstance->beginAdvertising();
 
     // Update battery
     BleCompositeHIDInstance->_hid->setBatteryLevel(BleCompositeHIDInstance->batteryLevel);
@@ -294,4 +298,10 @@ void BleCompositeHID::taskServer(void *pvParameter)
 
     // Wait to let the server start up
     vTaskDelay(portMAX_DELAY);
+}
+
+void BleCompositeHID::beginAdvertising() {
+
+    pAdvertising->start();
+    ESP_LOGD(LOG_TAG, "Advertising started!");
 }
