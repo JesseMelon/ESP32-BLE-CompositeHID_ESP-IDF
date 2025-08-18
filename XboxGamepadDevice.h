@@ -191,7 +191,7 @@ public:
     void releaseShare();
     
     void sendGamepadReport(bool defer = false);
-    void sendManagedGamepadReport(XboxGamepadInputReportData inputReport);
+    void sendManagedGamepadReport(XboxGamepadInputReportData* inputReport);
     
     
     private:
