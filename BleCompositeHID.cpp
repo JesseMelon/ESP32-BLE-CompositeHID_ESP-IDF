@@ -300,8 +300,19 @@ void BleCompositeHID::taskServer(void *pvParameter)
     vTaskDelay(portMAX_DELAY);
 }
 
-void BleCompositeHID::beginAdvertising() {
-
+void BleCompositeHID::beginAdvertising()
+{
     pAdvertising->start();
     ESP_LOGD(LOG_TAG, "Advertising started!");
+}
+
+void BleCompositeHID::disconnect()
+{
+    std::vector<uint16_t> peers = pServer->getPeerDevices();
+    
+    // Should only be one peer to disconnect
+    while (!peers.empty()) {
+        pServer->disconnect(peers[0]);
+        ESP_LOGD(LOG_TAG, "Disconnecting");
+    }
 }

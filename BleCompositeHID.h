@@ -31,6 +31,7 @@ public:
     void queueDeviceDeferredReport(std::function<void()> && reportFunc);
     void sendDeferredReports();
     void beginAdvertising();
+    void disconnect();
 
     void setBatteryLevel(uint8_t level);
     uint8_t batteryLevel;
