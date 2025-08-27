@@ -53,7 +53,6 @@ private:
     std::vector<BaseCompositeDevice*> _devices;
     SafeQueue<std::function<void()>> _deferredReports;
     TaskHandle_t _autoSendTaskHandle;
-    std::function<void(NimBLEAdvertising*)> _onAdvertisingCompleteCallback;
 };
 
 #endif // CONFIG_BT_NIMBLE_ROLE_PERIPHERAL

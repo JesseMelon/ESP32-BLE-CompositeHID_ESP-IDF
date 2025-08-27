@@ -67,7 +67,6 @@ BleCompositeHID::BleCompositeHID(std::string deviceName, std::string deviceManuf
     this->deviceManufacturer = deviceManufacturer;
     this->batteryLevel = batteryLevel;
     this->_connectionStatus = new BleConnectionStatus();   
-    this->_onAdvertisingCompleteCallback = nullptr;
 }
 
 BleCompositeHID::~BleCompositeHID()
@@ -285,7 +284,6 @@ void BleCompositeHID::taskServer(void *pvParameter)
 
     // Start BLE advertisement
     pAdvertising = pServer->getAdvertising();
-    pAdvertising->setAdvertisingCompleteCallback(BleCompositeHID::onAdvertisingComplete);
     pAdvertising->setAppearance(hidType);
     pAdvertising->addServiceUUID(BleCompositeHIDInstance->_hid->getHidService()->getUUID());
     BleCompositeHIDInstance->beginAdvertising();
@@ -319,7 +317,7 @@ void BleCompositeHID::disconnect()
     }
 }
 
-// Set the user-provided callback
+// Set the user-provided callback. Must be done after the task server is up
 void BleCompositeHID::setOnAdvertisingCompleteCallback(std::function<void(NimBLEAdvertising*)> callback) {
-    _onAdvertisingCompleteCallback = callback;
+        pAdvertising->setAdvertisingCompleteCallback(callback);
 }
