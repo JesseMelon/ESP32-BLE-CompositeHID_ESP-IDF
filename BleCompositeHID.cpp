@@ -67,6 +67,7 @@ BleCompositeHID::BleCompositeHID(std::string deviceName, std::string deviceManuf
     this->deviceManufacturer = deviceManufacturer;
     this->batteryLevel = batteryLevel;
     this->_connectionStatus = new BleConnectionStatus();   
+    this->_onAdvertisingCompleteCallback = nullptr;
 }
 
 BleCompositeHID::~BleCompositeHID()
@@ -284,6 +285,7 @@ void BleCompositeHID::taskServer(void *pvParameter)
 
     // Start BLE advertisement
     pAdvertising = pServer->getAdvertising();
+    pAdvertising->setAdvertisingCompleteCallback(BleCompositeHID::onAdvertisingComplete);
     pAdvertising->setAppearance(hidType);
     pAdvertising->addServiceUUID(BleCompositeHIDInstance->_hid->getHidService()->getUUID());
     BleCompositeHIDInstance->beginAdvertising();
@@ -311,8 +313,13 @@ void BleCompositeHID::disconnect()
     std::vector<uint16_t> peers = pServer->getPeerDevices();
     
     // Should only be one peer to disconnect
-    while (!peers.empty()) {
-        pServer->disconnect(peers[0]);
-        ESP_LOGD(LOG_TAG, "Disconnecting");
+    if (!peers.empty()) {
+        pServer->disconnect(peers[0], BLE_ERR_CONN_TERM_LOCAL); // Should remove peer on the next getPeerDevices call
+        ESP_LOGD(LOG_TAG, "Disconnecting. Peers remaining = %d", pServer->getConnectedCount());
     }
+}
+
+// Set the user-provided callback
+void BleCompositeHID::setOnAdvertisingCompleteCallback(std::function<void(NimBLEAdvertising*)> callback) {
+    _onAdvertisingCompleteCallback = callback;
 }

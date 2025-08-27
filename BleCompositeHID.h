@@ -27,7 +27,8 @@ public:
 
     void addDevice(BaseCompositeDevice* device);
     bool isConnected();
-
+    void setOnAdvertisingCompleteCallback(std::function<void(NimBLEAdvertising*)> callback);
+    static void onAdvertisingComplete(NimBLEAdvertising* pAdvertising);
     void queueDeviceDeferredReport(std::function<void()> && reportFunc);
     void sendDeferredReports();
     void beginAdvertising();
@@ -52,6 +53,7 @@ private:
     std::vector<BaseCompositeDevice*> _devices;
     SafeQueue<std::function<void()>> _deferredReports;
     TaskHandle_t _autoSendTaskHandle;
+    std::function<void(NimBLEAdvertising*)> _onAdvertisingCompleteCallback;
 };
 
 #endif // CONFIG_BT_NIMBLE_ROLE_PERIPHERAL
