@@ -5,7 +5,7 @@
 
 int ledPin = 5; // LED connected to digital pin 13
 
-XboxGamepadDevice *gamepad;
+XboxGamepadDevice *ble_gamepad;
 BleCompositeHID compositeHID("ESP32 SeriesX Controller", "Mystfit", 100);
 
 void OnVibrateEvent(XboxGamepadOutputReportData data)
@@ -39,14 +39,14 @@ void setup()
     Serial.println("Using serial number: " + String(hostConfig.getSerialNumber()));
     
     // Set up gamepad
-    gamepad = new XboxGamepadDevice(config);
+    ble_gamepad = new XboxGamepadDevice(config);
 
     // Set up vibration event handler
     FunctionSlot<XboxGamepadOutputReportData> vibrationSlot(OnVibrateEvent);
-    gamepad->onVibrate.attach(vibrationSlot);
+    ble_gamepad->onVibrate.attach(vibrationSlot);
 
     // Add all child devices to the top-level composite HID device to manage them
-    compositeHID.addDevice(gamepad);
+    compositeHID.addDevice(ble_gamepad);
 
     // Start the composite HID device to broadcast HID reports
     Serial.println("Starting composite HID device...");
@@ -81,21 +81,21 @@ void testButtons(){
     for (uint16_t button : buttons)
     {
         Serial.println("Pressing button " + String(button));
-        gamepad->press(button);
-        gamepad->sendGamepadReport();
+        ble_gamepad->press(button);
+        ble_gamepad->sendGamepadReport();
         delay(500);
-        gamepad->release(button);
-        gamepad->sendGamepadReport();
+        ble_gamepad->release(button);
+        ble_gamepad->sendGamepadReport();
         delay(100);
     }
 
     // The share button is a seperate call since it doesn't live in the same 
     // bitflag as the rest of the buttons
-    gamepad->pressShare();
-    gamepad->sendGamepadReport();
+    ble_gamepad->pressShare();
+    ble_gamepad->sendGamepadReport();
     delay(500);
-    gamepad->releaseShare();
-    gamepad->sendGamepadReport();
+    ble_gamepad->releaseShare();
+    ble_gamepad->sendGamepadReport();
     delay(100);
 }
 
@@ -114,11 +114,11 @@ void testPads(){
     for (XboxDpadFlags direction : directions)
     {
         Serial.println("Pressing DPad: " + String(direction));
-        gamepad->pressDPadDirectionFlag(direction);
-        gamepad->sendGamepadReport();
+        ble_gamepad->pressDPadDirectionFlag(direction);
+        ble_gamepad->sendGamepadReport();
         delay(500);
-        gamepad->releaseDPad();
-        gamepad->sendGamepadReport();
+        ble_gamepad->releaseDPad();
+        ble_gamepad->sendGamepadReport();
         delay(100);
     }
 }
@@ -127,9 +127,9 @@ void testTriggers(){
     for(int16_t val = XBOX_TRIGGER_MIN; val <= XBOX_TRIGGER_MAX; val++){
         if(val % 8 == 0)
             Serial.println("Setting trigger value to " + String(val));
-        gamepad->setLeftTrigger(val);
-        gamepad->setRightTrigger(val);
-        gamepad->sendGamepadReport();
+        ble_gamepad->setLeftTrigger(val);
+        ble_gamepad->setRightTrigger(val);
+        ble_gamepad->sendGamepadReport();
         delay(8);
     }
 }
@@ -142,9 +142,9 @@ void testThumbsticks(){
         int16_t x = cos((float)millis() / 1000.0f) * XBOX_STICK_MAX;
         int16_t y = sin((float)millis() / 1000.0f) * XBOX_STICK_MAX;
 
-        gamepad->setLeftThumb(x, y);
-        gamepad->setRightThumb(x, y);
-        gamepad->sendGamepadReport();
+        ble_gamepad->setLeftThumb(x, y);
+        ble_gamepad->setRightThumb(x, y);
+        ble_gamepad->sendGamepadReport();
         
         if(reportCount % 8 == 0)
             Serial.println("Setting left thumb to " + String(x) + ", " + String(y));

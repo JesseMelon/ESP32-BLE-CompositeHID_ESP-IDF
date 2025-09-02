@@ -286,6 +286,7 @@ void BleCompositeHID::taskServer(void *pvParameter)
     pAdvertising = pServer->getAdvertising();
     pAdvertising->setAppearance(hidType);
     pAdvertising->addServiceUUID(BleCompositeHIDInstance->_hid->getHidService()->getUUID());
+    BleCompositeHIDInstance->setOnAdvertisingCompleteCallbackImpl();
     BleCompositeHIDInstance->beginAdvertising();
 
     // Update battery
@@ -317,7 +318,23 @@ void BleCompositeHID::disconnect()
     }
 }
 
+void BleCompositeHID::setOnConnectCallback(std::function<void(void*)> callback)
+{
+    _connectionStatus->setOnConnectCallback(callback);
+}
+
+void BleCompositeHID::setOnDisconnectCallback(std::function<void(void*)> callback)
+{
+    _connectionStatus->setOnDisconnectCallback(callback);
+}
+
+void BleCompositeHID::setOnAdvertisingCompleteCallback(std::function<void(NimBLEAdvertising*)> callback)
+{
+    advCompleteCallback = callback;
+}
+
 // Set the user-provided callback. Must be done after the task server is up
-void BleCompositeHID::setOnAdvertisingCompleteCallback(std::function<void(NimBLEAdvertising*)> callback) {
-        pAdvertising->setAdvertisingCompleteCallback(callback);
+void BleCompositeHID::setOnAdvertisingCompleteCallbackImpl()
+{
+    pAdvertising->setAdvertisingCompleteCallback(advCompleteCallback);
 }

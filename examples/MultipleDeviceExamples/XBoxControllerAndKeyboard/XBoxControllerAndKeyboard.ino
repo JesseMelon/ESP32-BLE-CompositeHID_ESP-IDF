@@ -5,7 +5,7 @@
 #include <KeyboardDevice.h>
 
 
-XboxGamepadDevice *gamepad;
+XboxGamepadDevice *ble_gamepad;
 KeyboardDevice *keyboard;
 
 BleCompositeHID compositeHID("ESP32 SeriesX Controller", "Mystfit", 100);
@@ -25,7 +25,7 @@ void setup()
     BLEHostConfiguration hostConfig = config->getIdealHostConfiguration();
     
     // Set up gamepad
-    gamepad = new XboxGamepadDevice(config);
+    ble_gamepad = new XboxGamepadDevice(config);
 
     // Set up keyboard
     KeyboardConfiguration keyboardConfig;
@@ -33,7 +33,7 @@ void setup()
     keyboard = new KeyboardDevice(keyboardConfig);
 
     // Add the gamepad child devices to the composite HID device first so it will appear in the HID report descriptor first for XInput
-    compositeHID.addDevice(gamepad);
+    compositeHID.addDevice(ble_gamepad);
     compositeHID.addDevice(keyboard);
 
     // Start the composite HID device to broadcast HID reports
@@ -45,11 +45,11 @@ void loop()
 {
     if(compositeHID.isConnected()){
         // Test gamepad button
-        gamepad->press(XBOX_BUTTON_A);
-        gamepad->sendGamepadReport();
+        ble_gamepad->press(XBOX_BUTTON_A);
+        ble_gamepad->sendGamepadReport();
         delay(500);
-        gamepad->release(XBOX_BUTTON_A);
-        gamepad->sendGamepadReport();
+        ble_gamepad->release(XBOX_BUTTON_A);
+        ble_gamepad->sendGamepadReport();
         delay(100);
 
         // Test keyboard

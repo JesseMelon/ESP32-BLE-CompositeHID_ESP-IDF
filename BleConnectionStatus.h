@@ -16,11 +16,15 @@ public:
     BleConnectionStatus(void);
     void onConnect(NimBLEServer *pServer, NimBLEConnInfo& connInfo) override;
     void onDisconnect(NimBLEServer *pServer, NimBLEConnInfo& connInfo, int reason) override;
+    void setOnConnectCallback(std::function<void(void*)> callback);
+    void setOnDisconnectCallback(std::function<void(void*)> callback);
     //NimBLECharacteristic *inputGamepad;
     bool isConnected();
     void onAuthenticationComplete(NimBLEConnInfo& connInfo) override;
 private:
     bool connected = false;
+    std::function<void(void*)> onConnectCallback = nullptr;
+    std::function<void(void*)> OnDisconnectCallback = nullptr;
 };
 
 #endif // CONFIG_BT_NIMBLE_ROLE_PERIPHERAL

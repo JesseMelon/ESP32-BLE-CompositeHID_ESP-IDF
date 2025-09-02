@@ -27,12 +27,16 @@ public:
 
     void addDevice(BaseCompositeDevice* device);
     bool isConnected();
-    void setOnAdvertisingCompleteCallback(std::function<void(NimBLEAdvertising*)> callback);
     static void onAdvertisingComplete(NimBLEAdvertising* pAdvertising);
     void queueDeviceDeferredReport(std::function<void()> && reportFunc);
     void sendDeferredReports();
     void beginAdvertising();
     void disconnect();
+
+    void setOnAdvertisingCompleteCallback(std::function<void(NimBLEAdvertising*)> callback);
+    void setOnConnectCallback(std::function<void(void*)> callback);
+    void setOnDisconnectCallback(std::function<void(void*)> callback);
+
 
     void setBatteryLevel(uint8_t level);
     uint8_t batteryLevel;
@@ -45,10 +49,13 @@ protected:
 private:
     static void taskServer(void *pvParameter);
     static void timedSendDeferredReports(void *pvParameter);
+    void setOnAdvertisingCompleteCallbackImpl();
 
     BLEHostConfiguration _configuration;
     BleConnectionStatus* _connectionStatus;
     NimBLEHIDDevice* _hid;
+
+    std::function<void(NimBLEAdvertising*)> advCompleteCallback;
 
     std::vector<BaseCompositeDevice*> _devices;
     SafeQueue<std::function<void()>> _deferredReports;
