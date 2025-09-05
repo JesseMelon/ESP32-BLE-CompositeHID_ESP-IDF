@@ -1,11 +1,17 @@
 #include "GamepadConfiguration.h"
 #include "HIDTypes.h"
+#include "esp_log.h"
 
 #if defined(CONFIG_ARDUHAL_ESP_LOG)
 #include "esp32-hal-log.h"
 #define LOG_TAG "GamepadConfiguration"
 #else
-#include "esp_log.h"
+uint8_t lowByte(uint16_t value) {
+  return (uint8_t)(value & 0xFF);
+}
+uint8_t highByte(uint16_t value) {
+  return (uint8_t)(value >> 8);
+}
 static const char *LOG_TAG = "GamepadConfiguration";
 #endif
 

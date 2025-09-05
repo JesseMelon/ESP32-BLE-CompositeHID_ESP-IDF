@@ -1,7 +1,9 @@
 #ifndef ESP32_BLE_HOST_CONFIG_H
 #define ESP32_BLE_HOST_CONFIG_H
 
+#ifdef ARDUINO
 #include <Arduino.h>
+#endif
 #include <string>
 
 // VID Source defines. These determine from which vendor pool the VID should be sourced from

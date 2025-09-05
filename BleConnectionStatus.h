@@ -2,8 +2,11 @@
 #define ESP32_BLE_CONNECTION_STATUS_H
 #include "sdkconfig.h"
 #if defined(CONFIG_BT_ENABLED)
-
+#ifdef ARDUINO
 #include "nimconfig.h"
+#else
+#include <functional>
+#endif
 #if defined(CONFIG_BT_NIMBLE_ROLE_PERIPHERAL)
 
 #include <NimBLEServer.h>

@@ -1,13 +1,19 @@
 #include "XboxGamepadDevice.h"
 #include "BleCompositeHID.h"
+#include "esp_log.h"
 
 
 #if defined(CONFIG_ARDUHAL_ESP_LOG)
 #include "esp32-hal-log.h"
 #define LOG_TAG "XboxGamepadDevice"
 #else
-#include "esp_log.h"
 static const char *LOG_TAG = "XboxGamepadDevice";
+int constrain(int value, int min, int max)
+{
+    if (value < min) return min;
+    if (value > max) return max;
+    return value;
+}
 #endif
 
 XboxGamepadCallbacks::XboxGamepadCallbacks(XboxGamepadDevice* device) : _device(device)
@@ -347,7 +353,7 @@ void XboxGamepadDevice::sendManagedGamepadReport(XboxGamepadInputReportData* inp
         return;
 
     size_t packedSize = sizeof(* inputReport);
-    ESP_LOGD(LOG_TAG, "Sending gamepad report, size: %d", packedSize);
+    // ESP_LOGD(LOG_TAG, "Sending gamepad report, size: %d", packedSize);
     input->setValue((uint8_t*)inputReport, packedSize);
     input->notify();
 }

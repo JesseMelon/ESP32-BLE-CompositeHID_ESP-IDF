@@ -1,7 +1,12 @@
 #ifndef COMPOSITE_CONFIG_H
 #define COMPOSITE_CONFIG_H
-
+#ifdef ARDUINO
 #include <Arduino.h>
+#else
+#include <functional>
+#include <string>
+#define String std::string
+#endif
 //#include <HIDKeyboardTypes.h>
 #include <NimBLECharacteristic.h>
 #include <NimBLEHIDDevice.h>

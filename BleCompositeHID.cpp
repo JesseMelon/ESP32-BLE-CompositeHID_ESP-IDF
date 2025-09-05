@@ -61,6 +61,18 @@ std::string uint8_to_hex_string(const uint8_t *v, const size_t s) {
   return ss.str();
 }
 
+BleCompositeHID::BleCompositeHID(BleCompositeHIDConfig conf)
+{
+    this->deviceName = conf.deviceName;
+    this->deviceManufacturer = conf.deviceManufacturer;
+    this->batteryLevel = conf.batteryLevel;
+    this->advertisingTimeoutMS = conf.advertisingTimeoutMS;
+    this->_advCompleteCallback = conf.onAdvertisingComplete;
+    this->_connectionStatus = new BleConnectionStatus();
+    this->_connectionStatus->setOnConnectCallback(conf.onConnect);
+    this->_connectionStatus->setOnDisconnectCallback(conf.onDisconnect);
+}
+
 BleCompositeHID::BleCompositeHID(std::string deviceName, std::string deviceManufacturer, uint8_t batteryLevel) : _hid(nullptr)
 {
     this->deviceName = deviceName.substr(0, CONFIG_BT_NIMBLE_GAP_DEVICE_NAME_MAX_LEN - 1);
@@ -196,13 +208,11 @@ void BleCompositeHID::taskServer(void *pvParameter)
     size_t totalBufferSize = 2048;
     uint8_t tempHidReportDescriptor[totalBufferSize];
     int hidReportDescriptorSize = 0;
-    ESP_LOGD(LOG_TAG, "About to init devices");
     
     // Setup child devices to build the HID report descriptor
     for(auto device : BleCompositeHIDInstance->_devices){
-        ESP_LOGD(LOG_TAG, "Before device %s init", device->getDeviceConfig()->getDeviceName());
         device->init(BleCompositeHIDInstance->_hid);
-        ESP_LOGD(LOG_TAG, "After device %s init", device->getDeviceConfig()->getDeviceName());
+        ESP_LOGD(LOG_TAG, "device %s init", device->getDeviceConfig()->getDeviceName());
         
         auto config = device->getDeviceConfig();
         size_t reportSize = config->makeDeviceReport(tempHidReportDescriptor + hidReportDescriptorSize, totalBufferSize);
@@ -287,6 +297,7 @@ void BleCompositeHID::taskServer(void *pvParameter)
     pAdvertising->setAppearance(hidType);
     pAdvertising->addServiceUUID(BleCompositeHIDInstance->_hid->getHidService()->getUUID());
     BleCompositeHIDInstance->setOnAdvertisingCompleteCallbackImpl();
+    
     BleCompositeHIDInstance->beginAdvertising();
 
     // Update battery
@@ -303,14 +314,16 @@ void BleCompositeHID::taskServer(void *pvParameter)
 
 void BleCompositeHID::beginAdvertising()
 {
-    pAdvertising->start();
-    ESP_LOGD(LOG_TAG, "Advertising started!");
+    pAdvertising->start(BleCompositeHIDInstance->advertisingTimeoutMS);
+    ESP_LOGD(LOG_TAG, "Advertising started with timeout %d seconds", (advertisingTimeoutMS / 1000));
 }
 
 void BleCompositeHID::disconnect()
 {
     std::vector<uint16_t> peers = pServer->getPeerDevices();
     
+    ESP_LOGD(LOG_TAG, "Peers = %d", pServer->getConnectedCount());
+
     // Should only be one peer to disconnect
     if (!peers.empty()) {
         pServer->disconnect(peers[0], BLE_ERR_CONN_TERM_LOCAL); // Should remove peer on the next getPeerDevices call
@@ -330,11 +343,13 @@ void BleCompositeHID::setOnDisconnectCallback(std::function<void(void*)> callbac
 
 void BleCompositeHID::setOnAdvertisingCompleteCallback(std::function<void(NimBLEAdvertising*)> callback)
 {
-    advCompleteCallback = callback;
+    ESP_LOGD(LOG_TAG, "Setting advertising complete callback");
+    _advCompleteCallback = callback;
 }
 
 // Set the user-provided callback. Must be done after the task server is up
 void BleCompositeHID::setOnAdvertisingCompleteCallbackImpl()
 {
-    pAdvertising->setAdvertisingCompleteCallback(advCompleteCallback);
+    ESP_LOGD(LOG_TAG, "Setting advertising complete callback in task server");
+    pAdvertising->setAdvertisingCompleteCallback(_advCompleteCallback);
 }

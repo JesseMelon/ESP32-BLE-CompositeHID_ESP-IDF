@@ -222,6 +222,9 @@
 #define VOLUME_DEC_BUTTON 6
 #define VOLUME_MUTE_BUTTON 7
 
+#ifndef ARDUINO
+#define PROGMEM
+#endif
 
 static const uint8_t pidReportDescriptor[] PROGMEM= 
 {

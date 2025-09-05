@@ -1,4 +1,15 @@
 # Register the ESP32-BLE-CompositeHID component
+
+if(__COMPONENT_TARGETS MATCHES "___idf_esp-nimble-component")
+    list(APPEND ESP_NIMBLE_PRIV_REQUIRES
+        esp-nimble-component
+    )
+elseif(__COMPONENT_TARGETS MATCHES "__idf_nimble")
+    list(APPEND ESP_NIMBLE_PRIV_REQUIRES
+        nimble
+    )
+endif()
+
 idf_component_register(
   SRCS
     "XboxDescriptors.cpp"
@@ -13,10 +24,10 @@ idf_component_register(
   INCLUDE_DIRS
     "."
   REQUIRES
-    bt
-    esp-nimble-cpp  # NimBLE
-    esp32-3.2.1     # Arduino
+    esp-nimble-cpp
     Callback
+  # esp32-3.2.1     # Arduino
   PRIV_REQUIRES
+    bt
     nvs_flash
 )
