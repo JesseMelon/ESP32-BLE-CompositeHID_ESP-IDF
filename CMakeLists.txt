@@ -25,7 +25,7 @@ idf_component_register(
     "."
   REQUIRES
     esp-nimble-cpp
-    Callback
+  # Callback
   # esp32-3.2.1     # Arduino
   PRIV_REQUIRES
     bt
