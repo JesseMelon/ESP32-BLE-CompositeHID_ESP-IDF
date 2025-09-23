@@ -15,7 +15,7 @@ void BleConnectionStatus::onConnect(NimBLEServer *pServer, NimBLEConnInfo& connI
     if (pServer->getConnectedCount() > 1) {
         pServer->disconnect(connInfo.getConnHandle());
     }
-    pServer->updateConnParams(connInfo.getConnHandle(), 6, 12, 0, 600);
+    pServer->updateConnParams(connInfo.getConnHandle(), 6, 7, 0, 600);  // this line has 6, 12, 0, 600 as a previous revision
 
     if (onConnectCallback != nullptr) onConnectCallback(nullptr);
 }
