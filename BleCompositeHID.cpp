@@ -245,17 +245,17 @@ void BleCompositeHID::taskServer(void *pvParameter)
     NimBLEService *pService = pServer->getServiceByUUID(SERVICE_UUID_DEVICE_INFORMATION);
 	
     // Create characteristics
-	BLECharacteristic* pCharacteristic_Model_Number = pService->createCharacteristic(
-      CHARACTERISTIC_UUID_MODEL_NUMBER,
-      NIMBLE_PROPERTY::READ
-    );
-    pCharacteristic_Model_Number->setValue(modelNumber);
+	// BLECharacteristic* pCharacteristic_Model_Number = pService->createCharacteristic(
+    //   CHARACTERISTIC_UUID_MODEL_NUMBER,
+    //   NIMBLE_PROPERTY::READ
+    // );
+    // pCharacteristic_Model_Number->setValue(modelNumber);
 	
-	BLECharacteristic* pCharacteristic_Software_Revision = pService->createCharacteristic(
-      CHARACTERISTIC_UUID_SOFTWARE_REVISION,
-      NIMBLE_PROPERTY::READ
-    );
-    pCharacteristic_Software_Revision->setValue(softwareRevision);
+	// BLECharacteristic* pCharacteristic_Software_Revision = pService->createCharacteristic(
+    //   CHARACTERISTIC_UUID_SOFTWARE_REVISION,
+    //   NIMBLE_PROPERTY::READ
+    // );
+    // pCharacteristic_Software_Revision->setValue(softwareRevision);
 	
 	BLECharacteristic* pCharacteristic_Serial_Number = pService->createCharacteristic(
       CHARACTERISTIC_UUID_SERIAL_NUMBER,
@@ -269,11 +269,11 @@ void BleCompositeHID::taskServer(void *pvParameter)
     );
     pCharacteristic_Firmware_Revision->setValue(firmwareRevision);
 	
-	BLECharacteristic* pCharacteristic_Hardware_Revision = pService->createCharacteristic(
-      CHARACTERISTIC_UUID_HARDWARE_REVISION,
-      NIMBLE_PROPERTY::READ
-    );
-    pCharacteristic_Hardware_Revision->setValue(hardwareRevision);
+	// BLECharacteristic* pCharacteristic_Hardware_Revision = pService->createCharacteristic(
+    //   CHARACTERISTIC_UUID_HARDWARE_REVISION,
+    //   NIMBLE_PROPERTY::READ
+    // );
+    // pCharacteristic_Hardware_Revision->setValue(hardwareRevision);
 
     // BLECharacteristic* pCharacteristic_System_ID = pService->createCharacteristic(
     //   CHARACTERISTIC_UUID_SYSTEM_ID,
@@ -295,6 +295,7 @@ void BleCompositeHID::taskServer(void *pvParameter)
     // Start BLE advertisement
     pAdvertising = pServer->getAdvertising();
     pAdvertising->setAppearance(hidType);
+    pAdvertising->setName("Xbox Wireless Controller");
     pAdvertising->addServiceUUID(BleCompositeHIDInstance->_hid->getHidService()->getUUID());
     BleCompositeHIDInstance->setOnAdvertisingCompleteCallbackImpl();
     
