@@ -63,7 +63,7 @@ std::string uint8_to_hex_string(const uint8_t *v, const size_t s) {
 
 BleCompositeHID::BleCompositeHID(BleCompositeHIDConfig conf)
 {
-    this->deviceName = conf.deviceName;
+    this->deviceName = conf.deviceName.substr(0, CONFIG_BT_NIMBLE_GAP_DEVICE_NAME_MAX_LEN - 1);
     this->deviceManufacturer = conf.deviceManufacturer;
     this->batteryLevel = conf.batteryLevel;
     this->advertisingTimeoutMS = conf.advertisingTimeoutMS;
@@ -295,7 +295,8 @@ void BleCompositeHID::taskServer(void *pvParameter)
     // Start BLE advertisement
     pAdvertising = pServer->getAdvertising();
     pAdvertising->setAppearance(hidType);
-    pAdvertising->setName("Xbox Wireless Controller");
+    pAdvertising->setName("Leaf Gamepad");
+    pAdvertising->enableScanResponse(true); // Overcomes byte limitation which was causing the advertising name to fail silently by allowing us a full response packet
     pAdvertising->addServiceUUID(BleCompositeHIDInstance->_hid->getHidService()->getUUID());
     BleCompositeHIDInstance->setOnAdvertisingCompleteCallbackImpl();
     
